@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="A one-minute breathing break."><title>Quiet Orbit</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#121824;color:#fcf0db;font:16px system-ui;min-height:100svh;display:grid;place-items:center;background-image:radial-gradient(ellipse at 50% 48%,#283749,transparent 66%)}main{text-align:center;width:min(92%,620px);padding:35px 0}small{letter-spacing:.26em;color:#b7c9d0}h1{font:clamp(55px,12vw,96px)/1 Georgia;margin:18px 0 8px;letter-spacing:-.06em}p{color:#b7c9d0}figure{width:min(250px,65vw);aspect-ratio:1;margin:32px auto;display:grid;place-items:center;border:1px solid #a7c6d747;border-radius:50%;background:repeating-radial-gradient(circle,transparent 0 24px,#a7c6d724 25px 26px);position:relative}.orb{width:52%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 33% 25%,#fff1cd,#db8e6d 70%);box-shadow:0 0 45px #f3aa7766;transform:scale(var(--s,1))}button{font:inherit;font-weight:700;border:0;border-radius:30px;background:#f7d6ac;color:#172131;padding:13px 25px;cursor:pointer}button:focus-visible{outline:3px solid white;outline-offset:5px}#phase{min-height:1.5em;font-size:20px;color:#fcf0db;margin:12px 0 4px}#time{font-variant-numeric:tabular-nums;margin:0 0 18px;color:#b7c9d0}@media(prefers-reduced-motion:reduce){.orb{transform:none}}
+</style>
+<main><small>THE ONE-MINUTE RESET</small><h1>Quiet Orbit</h1><p>Take a moment. Let the circle guide your breath.</p>
+<figure aria-hidden="true"><div class="orb"></div></figure>
+<p id="phase" role="status">Ready when you are</p><div id="time">1:00</div><button id="toggle">Begin breathing</button></main>
+<script>
+const phase=document.querySelector('#phase'), time=document.querySelector('#time'), orb=document.querySelector('.orb'), toggle=document.querySelector('#toggle');
+let frame, start;
+function render(now){
+ const elapsed=(now-start)/1000;
+ if(elapsed>=60){stop('Nice work. Take that calm with you.','Begin again','0:00');return}
+ const cycle=elapsed%10, inhale=cycle<4, label=inhale?'Breathe in':'Breathe out';
+ if(phase.textContent!==label)phase.textContent=label;
+ orb.style.setProperty('--s',1+.65*(inhale?cycle/4:(10-cycle)/6));
+ const remaining=Math.ceil(60-elapsed);
+ time.textContent=remaining===60?'1:00':'0:'+String(remaining).padStart(2,'0');
+ frame=requestAnimationFrame(render);
+}
+function stop(label,button,clock){cancelAnimationFrame(frame);frame=null;orb.style.setProperty('--s',1);phase.textContent=label;toggle.textContent=button;time.textContent=clock}
+toggle.onclick=()=>{if(frame){stop('Ready when you are','Begin breathing','1:00');return}start=performance.now();toggle.textContent='End session';render(start)};
+</script></html>
